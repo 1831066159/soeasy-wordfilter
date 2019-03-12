@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="copy">
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+            $(".list-group-item").click(function(){
+                $(this).addClass("active").siblings().removeClass("active");
+                changepath("test :: copy");
+            })
+        });
+
+    </script>
+    <div class="col-sm-2">
+        <a href="#" class="list-group-item active">
+            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>内容过滤
+        </a>
+        <a href="#" class="list-group-item">
+            <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>VIP客户录入
+        </a>
+        <!--<a href="#" class="list-group-item">
+            <span class="glyphicon glyphicon-camera" aria-hidden="true">  </span>VIP客户消费
+        </a>
+        <a href="#" class="list-group-item">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"> </span>VIP客户增加
+        </a>
+        <a href="#" class="list-group-item">
+            <span class="glyphicon glyphicon-minus" aria-hidden="true"> </span>VIP客户删除
+        </a>
+        <a href="#" class="list-group-item">
+            <span class="glyphicon glyphicon-search" aria-hidden="true"> </span>VIP客户注销
+        </a>
+        <a href="#" class="list-group-item">
+            <span class="glyphicon glyphicon-user" aria-hidden="true"> </span>个人设置
+        </a>-->
+    </div>
+</div>
+</body>
+</html>
