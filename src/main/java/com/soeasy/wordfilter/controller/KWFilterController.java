@@ -18,14 +18,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 /**
- * @author zhaoxiang
+ * @author 没有蛀牙
  * @create 2019/3/8
  **/
 @Controller
-@RequestMapping(value = "/filter")
 public class KWFilterController {
     private static Logger logger = LoggerFactory.getLogger(KWFilterController.class);
 
+
+    @RequestMapping("/")
+    public String index() {
+        return "dashboard";
+    }
 
     /**
      * 添加新关键词

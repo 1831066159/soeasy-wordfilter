@@ -9,10 +9,10 @@
 
     <title>后台管理界面二</title>
     <script type="text/javascript">
-        function changepath(path){
+        function changepath(path) {
             alert(path);
 //            $('#main').attr('th:include',path);
-            $('#main').attr('th:replace',path);
+            $('#main').attr('th:replace', path);
         }
     </script>
 </head>
@@ -30,16 +30,12 @@
             <iframe id="main" th:replace="right ::html"></iframe>
         </div>
 
-        <iframe id="iframe-page-content" src="${base}resource/html/myindex.jsp" width="100%"  frameborder="no" border="0" marginwidth="0" marginheight=" 0" scrolling="no" allowtransparency="yes"></iframe>
+        <iframe id="iframe-page-content" src="${base}resource/html/myindex.jsp" width="100%" frameborder="no" border="0" marginwidth="0" marginheight=" 0" scrolling="no" allowtransparency="yes"></iframe>
     </div>
 </div>
 
 <!-- 底部页脚部分 -->
-<div class="footer">
-    <p class="text-center">
-        © 2019 wordfilter, Inc
-    </p>
-</div>
+<div class="footer" th:include="footer :: copyright"></div>
 </body>
 </html>
 
