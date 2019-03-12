@@ -14,6 +14,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -27,8 +28,24 @@ public class KWFilterController {
 
 
     @RequestMapping("/")
+    public String defaultPage() {
+        return "index";
+    }
+
+    @RequestMapping("index")
     public String index() {
-        return "dashboard";
+        return "index";
+    }
+
+    @RequestMapping("/filter")
+    public String filterContent(Model model) {
+
+        model.addAttribute("code", "200");
+        model.addAttribute("msg", "success");
+        model.addAttribute("html1", "html1");
+        model.addAttribute("html2", "html2");
+
+        return "filter";
     }
 
     /**
@@ -37,6 +54,7 @@ public class KWFilterController {
      * @param kws 过滤词1,过滤词2,过滤词3,……
      */
     @RequestMapping("addkw")
+    @ResponseBody
     public String addkw(@RequestParam(value = "kws", required = true) String kws) {
         try {
             Assert.hasLength(kws, "参数异常:kws");
