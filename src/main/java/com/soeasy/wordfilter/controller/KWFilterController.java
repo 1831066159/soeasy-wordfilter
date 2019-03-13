@@ -42,8 +42,9 @@ public class KWFilterController {
 
         model.addAttribute("code", "200");
         model.addAttribute("msg", "success");
-        model.addAttribute("html1", "html1");
-        model.addAttribute("html2", "html2");
+        model.addAttribute("html1", "");
+        model.addAttribute("html2", "");
+        model.addAttribute("url", "");
 
         return "filter";
     }
@@ -79,7 +80,7 @@ public class KWFilterController {
      * @param model
      * @return
      */
-    @RequestMapping("news")
+    @RequestMapping("filterkw")
     public String kwFilter(@RequestParam(value = "url", required = true) String url, @RequestParam(value = "type", required = true) String type, Model model) {
         try {
             // 参数检查
@@ -96,13 +97,20 @@ public class KWFilterController {
             if (!StringUtils.isEmpty(html)) {
                 KWContext ctx = KWContext.getInstance();
                 String filterRes = ctx.wordFilter(html);
+
+                model.addAttribute("url", url);
+                model.addAttribute("type", type);
                 // 原始内容
                 model.addAttribute("html1", html);
                 // 过滤后内容
                 model.addAttribute("html2", filterRes);
                 // 获取命中的词
+                StringBuffer hits = new StringBuffer("命中敏感词:");
                 List<keyWordResult> list = ctx.getHits(html);
-                model.addAttribute("hit", list);
+                for (keyWordResult res : list) {
+                    hits.append(res.getWord() + ",");
+                }
+                model.addAttribute("hits", hits);
 
                 model.addAttribute("code", "200");
                 model.addAttribute("msg", "success");

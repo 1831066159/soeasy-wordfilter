@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!-- 引入样式文件和动态控制 -->
+    <link href="../static/css/bootstrap.min.css" th:href="@{css/bootstrap.min.css}" rel="stylesheet"/>
+    <script src="../static/js/jquery-3.1.1.min.js" th:src="@{js/jquery-3.1.1.min.js}"></script>
+    <script src="../static/js/bootstrap.min.js" th:src="@{js/bootstrap.min.js}"></script>
+    <title>内容过滤</title>
+</head>
+<body>
+<!--顶部导航栏部分-->
+<div th:include="common/header :: copy"></div>
+
+<div class="container-fluid">
+    <div class="row" style="height:auto;min-height: 500px;">
+        <!--左边菜单栏-->
+        <div th:include="common/nav :: copy"></div>
+
+        <!--主面板区 start-->
+        <div class="col-sm-10">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    内容过滤
+                </div>
+                <div class="panel-body">
+                    <form role="form" class="form-inline" action="filterkw">
+                        <div class="form-group">
+                            <label for="url"> 网页地址 :</label>
+                            <input id="url" name="url" type="text" class="form-control" style="width: auto;min-width: 450px;"
+                                   th:value="${url}" placeholder="请输入待过的滤链接地址">
+                        </div>
+                        <div class="form-group">
+                            <label for="type">网页类型</label>
+                            <select id="type" name="type" class="form-control">
+                                <option value="sina" th:selected="${type == 'sina'}">新浪新闻</option>
+                                <option value="163" th:selected="${type == '163'}">网易新闻</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-default">内容过滤</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="panel-body">
+                    <form role="form" class="form-inline">
+                        <div class="form-group">
+                            <label for="kws">添加敏感词:</label>
+                            <input id="kws" name="kws" type="text" class="form-control" style="width: auto;min-width: 450px;"
+                                   placeholder="添加敏感词,多个用英文逗号分隔">
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-default" onclick="addKws()">增加</button>
+                        </div>
+                    </form>
+                </div>
+                <table class="table">
+                    <thead>
+                    <tr bgcolor="#f5f5f5">
+                        <th align="center">网页原始内容</th>
+                        <th align="center">过滤后内容</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <textarea class="form-control" style="min-height: 300px;resize:none;" disabled th:text="${html1}"></textarea>
+                        </td>
+                        <td>
+                            <textarea class="form-control" style="min-height: 300px;resize:none;" disabled th:text="${html2}"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" th:text="${hits}">Onions</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--主面板区end-->
+    </div>
+
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function addKws() {
+        var kws = $("#kws").val();
+        if (kws.length == 0) {
+            alert("请输入敏感词!");
+        }
+        $.ajax({
+            type: "POST",
+            url: "addkw?kws=" + kws,
+            success: function (msg) {
+                if (msg.code == 200) {
+                    alert("添加成功");
+                }
+            },
+            error: function () {
+                alert("系统异常！");
+            }
+        });
+
+    }
+    /*]]>*/
+</script>
+<!-- 底部页脚部分 -->
+<div class="footer" th:include="common/footer :: copyright"></div>
+</body>
+</html>
