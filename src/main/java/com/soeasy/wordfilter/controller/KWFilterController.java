@@ -13,12 +13,15 @@ import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
 /**
+ * 内容过滤ctrl
+ *
  * @author 没有蛀牙
  * @create 2019/3/8
  **/
@@ -29,7 +32,36 @@ public class KWFilterController {
 
     @RequestMapping("/")
     public String defaultPage() {
-        return "index";
+        return "login";
+    }
+
+    /**
+     * 退出
+     *
+     * @return
+     */
+    @RequestMapping("logout")
+    public String logout() {
+        return "login";
+    }
+
+    /**
+     * 登录
+     *
+     * @param inputName
+     * @param inputPassword
+     * @return
+     */
+    @RequestMapping(value = "login")
+    public String dologin(@RequestParam(value = "inputName", required = true) String inputName,
+                          @RequestParam(value = "inputPassword", required = true) String inputPassword) {
+        if ("admin".equals(inputName.trim()) && "admin".equals(inputPassword.trim())) {
+            return "index";
+        }
+        if ("guest".equals(inputName.trim()) && "guest".equals(inputPassword.trim())) {
+            return "index";
+        }
+        return "login";
     }
 
     @RequestMapping("index")
@@ -105,7 +137,7 @@ public class KWFilterController {
                 // 过滤后内容
                 model.addAttribute("html2", filterRes);
                 // 获取命中的词
-                StringBuffer hits = new StringBuffer("命中敏感词:");
+                StringBuffer hits = new StringBuffer("命中敏感词 : ");
                 List<keyWordResult> list = ctx.getHits(html);
                 for (keyWordResult res : list) {
                     hits.append(res.getWord() + ",");
