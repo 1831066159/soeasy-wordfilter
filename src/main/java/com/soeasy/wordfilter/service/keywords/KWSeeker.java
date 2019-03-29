@@ -5,6 +5,7 @@ import com.soeasy.wordfilter.utils.AnalysisUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,11 +51,27 @@ public class KWSeeker {
      *
      * @param newWord
      */
-    public void addWord(KeyWord... newWord) {
-        if (newWord != null && newWord.length > 0) {
+    public void addWord(List<KeyWord> newWord) {
+        if (newWord != null && newWord.size() > 0) {
             for (KeyWord kw : newWord) {
                 if (StringUtils.isNotEmpty(kw.getWord())) {
                     sensitiveWords.add(kw);
+                }
+            }
+            reloadKWSeeker();
+        }
+    }
+
+    /**
+     * 删除一个或多个新的关键词。
+     *
+     * @param newWord
+     */
+    public void delWord(KeyWord... newWord) {
+        if (newWord != null && newWord.length > 0) {
+            for (KeyWord kw : newWord) {
+                if (StringUtils.isNotEmpty(kw.getWord())) {
+                    sensitiveWords.remove(kw);
                 }
             }
             reloadKWSeeker();

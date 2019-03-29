@@ -1,10 +1,14 @@
 package com.soeasy.wordfilter.utils;
 
+import com.soeasy.wordfilter.model.KeyWord;
 import com.soeasy.wordfilter.service.keywords.KWContext;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * HttpClientUtil Tester.
@@ -36,7 +40,11 @@ public class HttpClientUtilTest {
         Element content = doc.getElementById("artibody");
         //System.out.println(content.toString());
         KWContext ctx = KWContext.getInstance();
-        ctx.addKW("王朴石");
+
+        KeyWord keyWord = new KeyWord("新闻");
+        List aa = new ArrayList<>();
+        aa.add(keyWord);
+        ctx.addKW(aa);
         String res = ctx.wordFilter(content.toString());
 
         System.out.println(res);
@@ -53,7 +61,10 @@ public class HttpClientUtilTest {
         Document doc = Jsoup.parse(html);
         Element content = doc.getElementById("endText");
         KWContext ctx = KWContext.getInstance();
-        ctx.addKW("王毅");
+        KeyWord keyWord = new KeyWord("王毅");
+        List aa = new ArrayList<>();
+        aa.add(keyWord);
+        ctx.addKW(aa);
         String res = ctx.wordFilter(content.toString());
 
         System.out.println(res);

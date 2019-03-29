@@ -1,6 +1,7 @@
 package com.soeasy.wordfilter.controller;
 
 import com.soeasy.wordfilter.model.keyWordResult;
+import com.soeasy.wordfilter.service.ProcessorService;
 import com.soeasy.wordfilter.service.keywords.KWContext;
 import com.soeasy.wordfilter.utils.HttpClientUtil;
 import org.jsoup.Jsoup;
@@ -8,15 +9,16 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -30,9 +32,45 @@ public class KWFilterController {
     private static Logger logger = LoggerFactory.getLogger(KWFilterController.class);
 
 
+    @Autowired
+    private ProcessorService processorService;
+
+    /**
+     * 初始页跳转
+     *
+     * @return
+     */
     @RequestMapping("/")
     public String defaultPage() {
         return "login";
+    }
+
+    /**
+     * 首页
+     *
+     * @return
+     */
+    @RequestMapping("index")
+    public String index() {
+        return "index";
+    }
+
+    /**
+     * 过滤页
+     *
+     * @param model
+     * @return
+     */
+    @RequestMapping("/filter")
+    public String filterContent(Model model) {
+
+        model.addAttribute("code", "200");
+        model.addAttribute("msg", "success");
+        model.addAttribute("html1", "");
+        model.addAttribute("html2", "");
+        model.addAttribute("url", "");
+
+        return "filter";
     }
 
     /**
@@ -64,22 +102,6 @@ public class KWFilterController {
         return "login";
     }
 
-    @RequestMapping("index")
-    public String index() {
-        return "index";
-    }
-
-    @RequestMapping("/filter")
-    public String filterContent(Model model) {
-
-        model.addAttribute("code", "200");
-        model.addAttribute("msg", "success");
-        model.addAttribute("html1", "");
-        model.addAttribute("html2", "");
-        model.addAttribute("url", "");
-
-        return "filter";
-    }
 
     /**
      * 添加新关键词
@@ -91,11 +113,8 @@ public class KWFilterController {
     public String addkw(@RequestParam(value = "kws", required = true) String kws) {
         try {
             Assert.hasLength(kws, "参数异常:kws");
-            KWContext ctx = KWContext.getInstance();
-            for (String key : kws.split(",")) {
-                // 向过滤器增加一个词，额外造个词
-                ctx.addKW(key);
-            }
+            processorService.addKws(Arrays.asList(kws.split(",")));
+
         } catch (Exception e) {
             logger.error("添加新关键词失败", e);
             return "400";
@@ -127,8 +146,16 @@ public class KWFilterController {
             }
 
             if (!StringUtils.isEmpty(html)) {
-                KWContext ctx = KWContext.getInstance();
-                String filterRes = ctx.wordFilter(html);
+
+                // 命中
+                List<String> hitList = processorService.getHits(html);
+                // 获取命中词的近义词
+                List<String> synonyms = processorService.getSynonym(hitList);
+                // 将近义词添加到敏感词树
+                processorService.addKws(synonyms);
+                // 过滤内容
+                String filterRes =processorService.filterHtml(html);
+
 
                 model.addAttribute("url", url);
                 model.addAttribute("type", type);
@@ -136,13 +163,10 @@ public class KWFilterController {
                 model.addAttribute("html1", html);
                 // 过滤后内容
                 model.addAttribute("html2", filterRes);
-                // 获取命中的词
-                StringBuffer hits = new StringBuffer("命中敏感词 : ");
-                List<keyWordResult> list = ctx.getHits(html);
-                for (keyWordResult res : list) {
-                    hits.append(res.getWord() + ",");
-                }
-                model.addAttribute("hits", hits);
+                // 命中的词
+                model.addAttribute("hits", "命中敏感词 : "+hitList.toString());
+                // 近义词
+                model.addAttribute("synonym","近义词 : "+synonyms.toString());
 
                 model.addAttribute("code", "200");
                 model.addAttribute("msg", "success");
@@ -156,8 +180,8 @@ public class KWFilterController {
 
 
     /**
-     * 新浪新闻
-     * URL来源: https://news.sina.com.cn/roll/#pageid=153&lid=2509&k=&num=50&page=1
+     * 解析新浪新闻
+     * 必须来源于: https://news.sina.com.cn/roll/#pageid=153&lid=2509&k=&num=50&page=1
      */
     public String getSinaContent(String url) {
         logger.info("解析sina-news: URL={}", url);
@@ -173,8 +197,8 @@ public class KWFilterController {
     }
 
     /**
-     * 网易新闻
-     * URL来源: http://news.163.com/latest
+     * 解析网易新闻
+     * 必须来源于: http://news.163.com/latest
      */
     public String get163Content(String url) {
         try {
