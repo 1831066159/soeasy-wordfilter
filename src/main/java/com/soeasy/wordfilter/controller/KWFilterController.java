@@ -1,8 +1,6 @@
 package com.soeasy.wordfilter.controller;
 
-import com.soeasy.wordfilter.model.keyWordResult;
 import com.soeasy.wordfilter.service.ProcessorService;
-import com.soeasy.wordfilter.service.keywords.KWContext;
 import com.soeasy.wordfilter.utils.HttpClientUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -146,7 +144,6 @@ public class KWFilterController {
             }
 
             if (!StringUtils.isEmpty(html)) {
-
                 // 命中
                 List<String> hitList = processorService.getHits(html);
                 // 获取命中词的近义词
@@ -154,8 +151,7 @@ public class KWFilterController {
                 // 将近义词添加到敏感词树
                 processorService.addKws(synonyms);
                 // 过滤内容
-                String filterRes =processorService.filterHtml(html);
-
+                String filterRes = processorService.filterHtml(html);
 
                 model.addAttribute("url", url);
                 model.addAttribute("type", type);
@@ -164,9 +160,9 @@ public class KWFilterController {
                 // 过滤后内容
                 model.addAttribute("html2", filterRes);
                 // 命中的词
-                model.addAttribute("hits", "命中敏感词 : "+hitList.toString());
+                model.addAttribute("hits", "命中敏感词 : " + hitList.toString());
                 // 近义词
-                model.addAttribute("synonym","近义词 : "+synonyms.toString());
+                model.addAttribute("synonym", "近义词 : " + synonyms.toString());
 
                 model.addAttribute("code", "200");
                 model.addAttribute("msg", "success");
@@ -174,6 +170,7 @@ public class KWFilterController {
         } catch (Exception e) {
             model.addAttribute("code", "400");
             model.addAttribute("msg", e.getMessage());
+            logger.error("过滤指定url内容异常", e);
         }
         return "filter";
     }
@@ -191,7 +188,7 @@ public class KWFilterController {
             Element content = doc.getElementById("artibody");
             return content.text();
         } catch (Exception e) {
-            logger.error("解析新浪新闻异常");
+            logger.error("解析新浪新闻异常", e);
         }
         return null;
     }

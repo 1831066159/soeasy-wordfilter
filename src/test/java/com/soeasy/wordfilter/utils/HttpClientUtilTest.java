@@ -34,8 +34,8 @@ public class HttpClientUtilTest {
     @Test
     public void testParseSina() {
         String url = "http://tech.sina.com.cn/csj/2019-03-08/doc-ihrfqzkc2225913.shtml";
-        String html = HttpClientUtil.doGet(url);
-
+        String url2 = "https://finance.sina.com.cn/china/gncj/2019-04-01/doc-ihsxncvh7244595.shtml";
+        String html = HttpClientUtil.doGet(url2);
         Document doc = Jsoup.parse(html);
         Element content = doc.getElementById("artibody");
         //System.out.println(content.toString());
@@ -44,7 +44,7 @@ public class HttpClientUtilTest {
         KeyWord keyWord = new KeyWord("新闻");
         List aa = new ArrayList<>();
         aa.add(keyWord);
-        ctx.addKW(aa);
+        ctx.addKwObj(aa);
         String res = ctx.wordFilter(content.toString());
 
         System.out.println(res);
@@ -64,7 +64,7 @@ public class HttpClientUtilTest {
         KeyWord keyWord = new KeyWord("王毅");
         List aa = new ArrayList<>();
         aa.add(keyWord);
-        ctx.addKW(aa);
+        ctx.addKwObj(aa);
         String res = ctx.wordFilter(content.toString());
 
         System.out.println(res);

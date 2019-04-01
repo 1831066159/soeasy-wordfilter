@@ -76,7 +76,7 @@ public class ProcessorService {
      */
     public void addKws(List<String> kws) {
         // 向过滤器增加自定义词
-        KWContext.getInstance().addKW(kws);
+        KWContext.getInstance().addKWstrList(kws);
     }
 
 

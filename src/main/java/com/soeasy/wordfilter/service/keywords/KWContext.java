@@ -282,11 +282,25 @@ public class KWContext {
      *
      * @param newWord
      */
-    public void addKW(List<String> keylist) {
+    public void addKWstrList(List<String> keylist) {
         logger.info("添加新关键词", keylist.size());
         List<KeyWord> keyWords = new ArrayList<>();
         for (String key : keylist) {
             keyWords.add(new KeyWord(key));
+        }
+        seeker.addWord(keyWords);
+    }
+
+    /**
+     * 添加新关键词
+     *
+     * @param keywordlist
+     */
+    public void addKwObj(List<KeyWord> keylist) {
+        logger.info("添加新关键词", keylist.size());
+        List<KeyWord> keyWords = new ArrayList<>();
+        for (KeyWord key : keylist) {
+            keyWords.add(key);
         }
         seeker.addWord(keyWords);
     }
