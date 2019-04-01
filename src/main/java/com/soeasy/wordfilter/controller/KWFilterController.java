@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 内容过滤ctrl
@@ -147,11 +149,18 @@ public class KWFilterController {
                 // 命中
                 List<String> hitList = processorService.getHits(html);
                 // 获取命中词的近义词
-                List<String> synonyms = processorService.getSynonym(hitList);
+                Map<String, List<String>> synonyms = processorService.getSynonym(hitList);
+                List<String> allsyn = new ArrayList<>();
+                for (String k : synonyms.keySet()) {
+                    allsyn.addAll(synonyms.get(k));
+                }
                 // 将近义词添加到敏感词树
-                processorService.addKws(synonyms);
+                processorService.addKws(allsyn);
                 // 过滤内容
                 String filterRes = processorService.filterHtml(html);
+
+                // 命中
+                List<String> hitAll = processorService.getHits(html);
 
                 model.addAttribute("url", url);
                 model.addAttribute("type", type);
@@ -161,9 +170,13 @@ public class KWFilterController {
                 model.addAttribute("html2", filterRes);
                 // 命中的词
                 model.addAttribute("hits", "命中敏感词 : " + hitList.toString());
+                logger.info("命中敏感词:{}", hitList);
                 // 近义词
-                model.addAttribute("synonym", "近义词 : " + synonyms.toString());
-
+                model.addAttribute("synonym", "敏感词近义词 : " + synonyms.toString());
+                logger.info("敏感词近义词:{}", synonyms);
+                // 命中的全部
+                model.addAttribute("hitall", "命中的全部词 : " + hitAll.toString());
+                logger.info("命中的全部词:{}", hitAll);
                 model.addAttribute("code", "200");
                 model.addAttribute("msg", "success");
             }

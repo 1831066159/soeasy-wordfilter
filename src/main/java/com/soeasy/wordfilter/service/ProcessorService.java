@@ -10,7 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 没有蛀牙
@@ -54,18 +56,29 @@ public class ProcessorService {
      *
      * @param hits
      */
-    public List<String> getSynonym(List<String> hits) {
-        List<String> synonyms = new ArrayList<>();
+    public Map<String, List<String>> getSynonym(List<String> hits) {
+
+        Map<String, List<String>> resmap = new HashMap<>();
+
         for (String str : hits) {
+            List<String> synonyms = new ArrayList<>();
+            // 进行分词
             List<Word> words = WordSegmenter.segWithStopWords(str);
+            // 做同义标注
             SynonymTagging.process(words);
             for (Word w : words) {
+                int i=1;
+                // 获取同义词
                 for (Word wy : w.getSynonym()) {
+                    if(i++>20){
+                      break;
+                    }
                     synonyms.add(wy.getText());
                 }
             }
+            resmap.put(str, synonyms);
         }
-        return synonyms;
+        return resmap;
     }
 
 
