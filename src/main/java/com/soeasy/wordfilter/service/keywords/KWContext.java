@@ -15,7 +15,7 @@ import java.util.*;
 /**
  * 敏感词
  *
- * @author 没有蛀牙
+ * @author
  * @create 2019/3/7
  **/
 public class KWContext {

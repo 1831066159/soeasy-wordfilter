@@ -1,5 +1,6 @@
 package com.soeasy.wordfilter.controller;
 
+import com.soeasy.wordfilter.service.IndexService;
 import com.soeasy.wordfilter.service.ProcessorService;
 import com.soeasy.wordfilter.utils.HttpClientUtil;
 import org.jsoup.Jsoup;
@@ -24,7 +25,7 @@ import java.util.Map;
 /**
  * 内容过滤ctrl
  *
- * @author 没有蛀牙
+ * @author
  * @create 2019/3/8
  **/
 @Controller
@@ -34,6 +35,8 @@ public class KWFilterController {
 
     @Autowired
     private ProcessorService processorService;
+    @Autowired
+    private IndexService indexService;
 
     /**
      * 初始页跳转
@@ -45,6 +48,7 @@ public class KWFilterController {
         return "login";
     }
 
+
     /**
      * 首页
      *
@@ -55,23 +59,6 @@ public class KWFilterController {
         return "index";
     }
 
-    /**
-     * 过滤页
-     *
-     * @param model
-     * @return
-     */
-    @RequestMapping("/filter")
-    public String filterContent(Model model) {
-
-        model.addAttribute("code", "200");
-        model.addAttribute("msg", "success");
-        model.addAttribute("html1", "");
-        model.addAttribute("html2", "");
-        model.addAttribute("url", "");
-
-        return "filter";
-    }
 
     /**
      * 退出
@@ -93,13 +80,36 @@ public class KWFilterController {
     @RequestMapping(value = "login")
     public String dologin(@RequestParam(value = "inputName", required = true) String inputName,
                           @RequestParam(value = "inputPassword", required = true) String inputPassword) {
-        if ("admin".equals(inputName.trim()) && "admin".equals(inputPassword.trim())) {
-            return "index";
-        }
-        if ("guest".equals(inputName.trim()) && "guest".equals(inputPassword.trim())) {
-            return "index";
+
+        try {
+            Assert.hasLength(inputName, "用户名不能为空");
+            Assert.hasLength(inputPassword, "密码不能为空");
+            boolean checkRes = indexService.checkUser(inputName, inputPassword);
+            if (checkRes) {
+                return "index";
+            }
+        } catch (Exception e) {
+            logger.error("登录异常", e);
         }
         return "login";
+    }
+
+    /**
+     * 内容过滤页
+     *
+     * @param model
+     * @return
+     */
+    @RequestMapping("welcome")
+    public String filterContent(Model model) {
+
+        model.addAttribute("code", "200");
+        model.addAttribute("msg", "success");
+        model.addAttribute("html1", "");
+        model.addAttribute("html2", "");
+        model.addAttribute("url", "");
+
+        return "filter";
     }
 
 
@@ -198,7 +208,15 @@ public class KWFilterController {
         try {
             String html = HttpClientUtil.doGet(url);
             Document doc = Jsoup.parse(html);
-            Element content = doc.getElementById("artibody");
+            Element content = null;
+
+            content = doc.getElementById("artibody");
+            if (content == null) {
+                content = doc.getElementById("article");
+            }
+            if (content == null) {
+                return "网站结构更新,内容解析出错,请更新解析算法";
+            }
             return content.text();
         } catch (Exception e) {
             logger.error("解析新浪新闻异常", e);
@@ -215,6 +233,9 @@ public class KWFilterController {
             String html = HttpClientUtil.doGet(url);
             Document doc = Jsoup.parse(html);
             Element content = doc.getElementById("endText");
+            if (content == null) {
+                return "网站结构更新,内容解析出错,请更新解析算法";
+            }
             return content.text();
         } catch (Exception e) {
             logger.error("解析网易新闻异常");

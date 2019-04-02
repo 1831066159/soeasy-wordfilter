@@ -9,11 +9,11 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableAutoConfiguration
 @SpringBootApplication
 @ComponentScan
-//@MapperScan("com.soeasy.wordfilter.mapper")//将项目中对应的mapper类的路径加进来就可以了
+@MapperScan("com.soeasy.wordfilter.mapper")
 public class Application {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 
 }
