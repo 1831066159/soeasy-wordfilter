@@ -10,6 +10,10 @@
     * maven3
     * mysql8.0 , 建表文件: resources/soeasy_wordfilter.sql
 
+*数据库说明,可在: application.yml 里修改
+>>数据库实例名: soeasy_wordfilter
+>>username: root
+>>password: 12345678
 
 
 *说明:
